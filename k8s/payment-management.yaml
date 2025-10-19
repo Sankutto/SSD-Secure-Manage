@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-management-deployment
+  labels:
+    app: payment-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-management
+  template:
+    metadata:
+      labels:
+        app: payment-management
+    spec:
+      containers:
+      - name: payment-management
+        image: securemanage/payment-management
+        ports:
+        - containerPort: 3003
+        env:
+        - name: PORT
+          value: "3003"
+        - name: MONGODB_URL
+          value: "mongodb://mongodb-service:27017/paymentdb"
+        - name: STRIPE_SECRET_KEY
+          value: "your-stripe-secret-key"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-management-service
+spec:
+  selector:
+    app: payment-management
+  ports:
+    - protocol: TCP
+      port: 3003
+      targetPort: 3003

@@ -1,0 +1,56 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+metadata:
+  name: securemanage-local
+build:
+  artifacts:
+  - image: securemanage/client
+    context: client
+    docker:
+      dockerfile: Dockerfile
+  - image: securemanage/api-gateway
+    context: api-gateway
+    docker:
+      dockerfile: Dockerfile
+  - image: securemanage/user-management
+    context: UserManagementService
+    docker:
+      dockerfile: Dockerfile
+  - image: securemanage/course-management
+    context: CourseManagementService
+    docker:
+      dockerfile: Dockerfile
+  - image: securemanage/payment-management
+    context: PaymentManagementService
+    docker:
+      dockerfile: Dockerfile
+  - image: securemanage/enrollment-management
+    context: EnrollmentManagementService
+    docker:
+      dockerfile: Dockerfile
+  local:
+    push: false
+    useDockerCLI: true
+    concurrency: 1
+manifests:
+  rawYaml:
+  - k8s/mongodb.yaml
+  - k8s/user-management.yaml
+  - k8s/course-management.yaml
+  - k8s/payment-management.yaml
+  - k8s/enrollment-management.yaml
+  - k8s/api-gateway.yaml
+  - k8s/client.yaml
+portForward:
+- resourceType: service
+  resourceName: client-service
+  port: 3000
+  localPort: 3000
+- resourceType: service
+  resourceName: api-gateway-service
+  port: 8800
+  localPort: 8800
+- resourceType: service
+  resourceName: mongodb-service
+  port: 27017
+  localPort: 27017

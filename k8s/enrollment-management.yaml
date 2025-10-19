@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enrollment-management-deployment
+  labels:
+    app: enrollment-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: enrollment-management
+  template:
+    metadata:
+      labels:
+        app: enrollment-management
+    spec:
+      containers:
+      - name: enrollment-management
+        image: securemanage/enrollment-management
+        ports:
+        - containerPort: 3004
+        env:
+        - name: PORT
+          value: "3004"
+        - name: MONGODB_URL
+          value: "mongodb://mongodb-service:27017/enrollmentdb"
+        - name: JWT_SECRET
+          value: "your-jwt-secret-key"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: enrollment-management-service
+spec:
+  selector:
+    app: enrollment-management
+  ports:
+    - protocol: TCP
+      port: 3004
+      targetPort: 3004

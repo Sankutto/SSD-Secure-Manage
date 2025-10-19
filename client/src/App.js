@@ -1,12 +1,12 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import UserContext from "../src/ContextComponent/ContextComponent";
 
 // Header and Footer
 import Header from './components/headerComponent/Header';
 import Footer from './components/footerComponent/Footer';
- 
+
 // Auth Components
 import RegisterComponent from './auth/components/registerComponent/registerComponent';
 import LoginComponent from './auth/components/loginComponent/loginComponent';
@@ -39,61 +39,72 @@ import AllPaymentsPage from "./pages/allPaymentsPage/allPaymentsPage";
 import UserEnrollmentsPage from "./pages/viewUserEnrollmentsPage/viewUserEnrollmentsPage";
 
 
- 
+
 function App() {
 
   // user and token details pass
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
+    try {
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Error parsing stored user:", error);
+      localStorage.removeItem("user");
+      return null;
+    }
   });
-  const [token, setToken] = useState(()=> {
+  const [token, setToken] = useState(() => {
     const storedToken = localStorage.getItem("token");
-    return storedToken ? JSON.parse(storedToken) : null;
+    // Tokens are stored as plain strings, not JSON
+    return storedToken || null;
   });
   useEffect(() => {
-    if (user && token) {
+    if (user) {
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("token", JSON.stringify(token));
     } else {
       localStorage.removeItem("user");
+    }
+
+    if (token) {
+      localStorage.setItem("token", token); // Store token as plain string
+    } else {
       localStorage.removeItem("token");
     }
-  }, [user]);
+  }, [user, token]);
 
   return (
-      <Router>
-        <UserContext.Provider value={{ user, setUser, token, setToken }}>
-          <Header/>
-            <Routes>
-              <Route path='' element={<Index/>}/>
-              <Route path='/home' element={<Home/>}/>
-              <Route path='/register' element={<RegisterComponent/>}/>
-              <Route path='/login' element={<LoginComponent/>}/>
-              <Route path='/google-login' element={<GoogleLoginComponent/>}/>
-              <Route path='/profile/:id' element={<Profile/>}/>
-              <Route path='/order-summary' element={<OrderSummaryPage/>}/>
-              <Route path='/createCourse' element={<CreateCoursePage/>}/>
-              <Route path='/getCourses' element={<GetCoursesByUserPage/>}/>
-              <Route path='/viewCourse/:id' element={<GetCourseByIdPage/>}/>
-              <Route path='/updateCourse/:id' element={<UpdateCoursePage/>}/>
-              <Route path='/enrollments' element={<EnrollmentsPage/>}/>
-              <Route path='/manage-courses' element={<ManageCoursePage/>}/>
-              <Route path='/manage-users' element={<ManageUserPage/>}/>
-              <Route path='/all-users' element={<ViewallUsersPage/>}/>
-              <Route path='/all-instructors' element={<ViewallInstructorsPage/>}/>
-              <Route path='/all-enrollments' element={<AllEnrollmentsPage/>}/>
-              <Route path='/all-payments' element={<AllPaymentsPage/>}/>
-              <Route path='/all-Courses' element={<ViewAllCourses/>}/>
-              <Route path='/coursePage/:id' element={<BoughtCoursePage/>}/>
-              <Route path='/confirmationPage' element={<PaymentConfirmationPage/>}/>
-              <Route path='/send-email' element={<EmailFormPage/>}/>
-              <Route path='/user-enrollments' element={<UserEnrollmentsPage/>}/>
-            </Routes>
-          <Footer/>
-        </UserContext.Provider>
-      </Router>
+    <Router>
+      <UserContext.Provider value={{ user, setUser, token, setToken }}>
+        <Header />
+        <Routes>
+          <Route path='' element={<Index />} />
+          <Route path='/home' element={<Home />} />
+          <Route path='/register' element={<RegisterComponent />} />
+          <Route path='/login' element={<LoginComponent />} />
+          <Route path='/google-login' element={<GoogleLoginComponent />} />
+          <Route path='/profile/:id' element={<Profile />} />
+          <Route path='/order-summary' element={<OrderSummaryPage />} />
+          <Route path='/createCourse' element={<CreateCoursePage />} />
+          <Route path='/getCourses' element={<GetCoursesByUserPage />} />
+          <Route path='/viewCourse/:id' element={<GetCourseByIdPage />} />
+          <Route path='/updateCourse/:id' element={<UpdateCoursePage />} />
+          <Route path='/enrollments' element={<EnrollmentsPage />} />
+          <Route path='/manage-courses' element={<ManageCoursePage />} />
+          <Route path='/manage-users' element={<ManageUserPage />} />
+          <Route path='/all-users' element={<ViewallUsersPage />} />
+          <Route path='/all-instructors' element={<ViewallInstructorsPage />} />
+          <Route path='/all-enrollments' element={<AllEnrollmentsPage />} />
+          <Route path='/all-payments' element={<AllPaymentsPage />} />
+          <Route path='/all-Courses' element={<ViewAllCourses />} />
+          <Route path='/coursePage/:id' element={<BoughtCoursePage />} />
+          <Route path='/confirmationPage' element={<PaymentConfirmationPage />} />
+          <Route path='/send-email' element={<EmailFormPage />} />
+          <Route path='/user-enrollments' element={<UserEnrollmentsPage />} />
+        </Routes>
+        <Footer />
+      </UserContext.Provider>
+    </Router>
   );
 }
- 
+
 export default App;

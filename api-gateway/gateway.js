@@ -22,10 +22,16 @@ app.use((req, res, next) => {
 });
 
 // Proxy requests to different service
-app.use("/UserManagementService", proxy("http://localhost:3001"));
-app.use("/CourseManagementService", proxy("http://localhost:3002"));
-app.use("/PaymentManagementService", proxy("http://localhost:3003"));
-app.use("/EnrollmentManagementService", proxy("http://localhost:3004"));
+// Use Docker Compose service names in production, localhost for development
+const userServiceUrl = process.env.NODE_ENV === 'production' ? "http://user-management:3001" : "http://localhost:3001";
+const courseServiceUrl = process.env.NODE_ENV === 'production' ? "http://course-management:3002" : "http://localhost:3002";
+const paymentServiceUrl = process.env.NODE_ENV === 'production' ? "http://payment-management:3003" : "http://localhost:3003";
+const enrollmentServiceUrl = process.env.NODE_ENV === 'production' ? "http://enrollment-management:3004" : "http://localhost:3004";
+
+app.use("/UserManagementService", proxy(userServiceUrl));
+app.use("/CourseManagementService", proxy(courseServiceUrl));
+app.use("/PaymentManagementService", proxy(paymentServiceUrl));
+app.use("/EnrollmentManagementService", proxy(enrollmentServiceUrl));
 
 // Start the API Gateway
 const PORT = process.env.PORT || 8800;

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course-management-deployment
+  labels:
+    app: course-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: course-management
+  template:
+    metadata:
+      labels:
+        app: course-management
+    spec:
+      containers:
+      - name: course-management
+        image: securemanage/course-management
+        ports:
+        - containerPort: 3002
+        env:
+        - name: PORT
+          value: "3002"
+        - name: MONGODB_URL
+          value: "mongodb://mongodb-service:27017/coursedb"
+        - name: JWT_SECRET
+          value: "your-jwt-secret-key"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: course-management-service
+spec:
+  selector:
+    app: course-management
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002
