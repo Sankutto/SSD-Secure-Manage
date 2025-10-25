@@ -1,0 +1,125 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: securemanage-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - securemanage-network
+
+  user-management:
+    build: 
+      context: ./UserManagementService
+      dockerfile: Dockerfile
+    container_name: securemanage-user-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGODB_URL=mongodb://admin:password@mongodb:27017/userdb?authSource=admin
+      - JWT_SECRET=your-jwt-secret-key
+      - NODE_ENV=development
+      - CLIENT_ID=placeholder-google-client-id
+      - CLIENT_SECRET=placeholder-google-client-secret
+      - SESSION_SECRET=your-session-secret-key-for-development
+    depends_on:
+      - mongodb
+    networks:
+      - securemanage-network
+
+  course-management:
+    build: 
+      context: ./CourseManagementService
+      dockerfile: Dockerfile
+    container_name: securemanage-course-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MONGODB_URL=mongodb://admin:password@mongodb:27017/coursedb?authSource=admin
+      - JWT_SECRET=your-jwt-secret-key
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+    networks:
+      - securemanage-network
+
+  payment-management:
+    build: 
+      context: ./PaymentManagementService
+      dockerfile: Dockerfile
+    container_name: securemanage-payment-service
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - MONGODB_URL=mongodb://admin:password@mongodb:27017/paymentdb?authSource=admin
+      - STRIPE_SECRET_KEY=your-stripe-secret-key
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+    networks:
+      - securemanage-network
+
+  enrollment-management:
+    build: 
+      context: ./EnrollmentManagementService
+      dockerfile: Dockerfile
+    container_name: securemanage-enrollment-service
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - MONGODB_URL=mongodb://admin:password@mongodb:27017/enrollmentdb?authSource=admin
+      - JWT_SECRET=your-jwt-secret-key
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+    networks:
+      - securemanage-network
+
+  api-gateway:
+    build: 
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: securemanage-api-gateway
+    ports:
+      - "8800:8800"
+    environment:
+      - PORT=8800
+      - NODE_ENV=production
+    depends_on:
+      - user-management
+      - course-management
+      - payment-management
+      - enrollment-management
+    networks:
+      - securemanage-network
+
+  client:
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: securemanage-client
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_GATEWAY_URL=http://localhost:8800
+    depends_on:
+      - api-gateway
+    networks:
+      - securemanage-network
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongodb_data:
+
+networks:
+  securemanage-network:
+    driver: bridge
