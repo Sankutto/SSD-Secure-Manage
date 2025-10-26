@@ -28,8 +28,8 @@ const adminRegister = async (req, res) => {
         Password: hashPassword,
       });
 
-      const token = jwt.sign({ _id: admin._id }, 'secretkey123', {
-        expiresIn: '60d',
+      const token = jwt.sign({ email: Email, type: 'admin' }, process.env.JWT_SECRET, {
+        expiresIn: '1h',
       });
 
       await admin.save();
@@ -57,8 +57,8 @@ const registerStudent = async (req, res) => {
         Password: hashPassword,
       });
 
-      const token = jwt.sign({ _id: student._id }, 'secretkey123', {
-        expiresIn: '60d',
+      const token = jwt.sign({ email: Email, type: 'student' }, process.env.JWT_SECRET, {
+        expiresIn: '1h',
       });
 
       await student.save();
@@ -86,8 +86,8 @@ const registerInstructor = async (req, res) => {
         Password: hashPassword,
       });
 
-      const token = jwt.sign({ _id: instructor._id }, 'secretkey123', {
-        expiresIn: '60d',
+      const token = jwt.sign({ email: Email, type: 'instructor' }, process.env.JWT_SECRET, {
+        expiresIn: '1h',
       });
 
       await instructor.save();
@@ -159,9 +159,9 @@ const validateToken = (req, res) => {
 
     res.status(200).json({
       user: {
-        Email: decoded.Email,
-        Fullname: decoded.Fullname,
-        Type: decoded.Type,
+        Email: decoded.email || decoded.Email,
+        Fullname: decoded.fullname || decoded.Fullname,
+        Type: decoded.type || decoded.Type,
         _id: decoded._id
       },
       token

@@ -1,9 +1,12 @@
 const jwt = require("jsonwebtoken");
 
 const isAdmin = (req, res, next) => {
-    let token = req.headers.authorization.split(" ")[1];
-    token = token.replace(/"/g, '');
     try {
+        if (!req.headers.authorization) {
+            return res.status(401).json({ message: "Authorization header missing!" });
+        }
+        let token = req.headers.authorization.split(" ")[1];
+        token = token.replace(/"/g, '');
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         if (decodedToken.type === 'admin') {
             next();
@@ -16,9 +19,12 @@ const isAdmin = (req, res, next) => {
 };
 
 const isAdminORInstructor = (req, res, next) => {
-    let token = req.headers.authorization.split(" ")[1];
-    token = token.replace(/"/g, '');
     try {
+        if (!req.headers.authorization) {
+            return res.status(401).json({ message: "Authorization header missing!" });
+        }
+        let token = req.headers.authorization.split(" ")[1];
+        token = token.replace(/"/g, '');
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         if (decodedToken.type === 'admin' || decodedToken.type === 'instructor') {
             next();
@@ -31,9 +37,12 @@ const isAdminORInstructor = (req, res, next) => {
 };
 
 const isAdminORStudent = (req, res, next) => {
-    let token = req.headers.authorization.split(" ")[1];
-    token = token.replace(/"/g, '');
     try {
+        if (!req.headers.authorization) {
+            return res.status(401).json({ message: "Authorization header missing!" });
+        }
+        let token = req.headers.authorization.split(" ")[1];
+        token = token.replace(/"/g, '');
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         if (decodedToken.type === 'admin' || decodedToken.type === 'student') {
             next();
@@ -46,10 +55,12 @@ const isAdminORStudent = (req, res, next) => {
 };
   
 const isInstructor = (req, res, next) => {
-    let token = req.headers.authorization.split(" ")[1];
-    token = token.replace(/"/g, '');
     try {
-        console.log("Hekkki");
+        if (!req.headers.authorization) {
+            return res.status(401).json({ message: "Authorization header missing!" });
+        }
+        let token = req.headers.authorization.split(" ")[1];
+        token = token.replace(/"/g, '');
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         if (decodedToken.type === 'instructor') {
             next();
@@ -62,9 +73,12 @@ const isInstructor = (req, res, next) => {
 };
 
 const isInstructorORStudent = (req, res, next) => {
-    let token = req.headers.authorization.split(" ")[1];
-    token = token.replace(/"/g, '');
     try {
+        if (!req.headers.authorization) {
+            return res.status(401).json({ message: "Authorization header missing!" });
+        }
+        let token = req.headers.authorization.split(" ")[1];
+        token = token.replace(/"/g, '');
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         if (decodedToken.type === 'instructor' || decodedToken.type === 'student') {
             next();
@@ -77,9 +91,12 @@ const isInstructorORStudent = (req, res, next) => {
 };
   
 const isStudent = (req, res, next) => {
-    let token = req.headers.authorization.split(" ")[1];
-    token = token.replace(/"/g, '');
     try {
+        if (!req.headers.authorization) {
+            return res.status(401).json({ message: "Authorization header missing!" });
+        }
+        let token = req.headers.authorization.split(" ")[1];
+        token = token.replace(/"/g, '');
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         if (decodedToken.type === 'student') {
             next();

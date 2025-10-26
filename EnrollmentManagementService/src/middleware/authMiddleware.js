@@ -2,11 +2,12 @@ const jwt = require("jsonwebtoken");
 
 //jwt token authentication
 const authenticate = (req, res, next) => {
-  const token = req.headers.authorization;
-
   try {
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Authorization header missing!" });
+    }
     const token = req.headers.authorization.split(" ")[1];
-    const decodedToken = jwt.verify(token, "Your_Secret_Token");
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     req.userData = {
       email: decodedToken.email,
       type: decodedToken.type,
@@ -18,9 +19,12 @@ const authenticate = (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-  const token = req.headers.authorization;
   try {
-    const decodedToken = jwt.verify(token, "Your_Secret_Token");
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Authorization header missing!" });
+    }
+    const token = req.headers.authorization.split(" ")[1];
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     if (decodedToken.type === 'admin') {
       next();
     } else {
@@ -32,9 +36,12 @@ const isAdmin = (req, res, next) => {
 };
 
 const isInstructor = (req, res, next) => {
-  const token = req.headers.authorization;
   try {
-    const decodedToken = jwt.verify(token, "Your_Secret_Token");
+    if (!req.headers.authorization) {
+      return res.status(401).json({ message: "Authorization header missing!" });
+    }
+    const token = req.headers.authorization.split(" ")[1];
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     if (decodedToken.type === 'instructor') {
       next();
     } else {
@@ -50,7 +57,7 @@ const isStudent = (req, res, next) => {
   console.log(token)
   try {
     const token = req.headers.authorization.split(" ")[1];
-    const decodedToken = jwt.verify(token, "Your_Secret_Token");
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     console.log(decodedToken)
     if (decodedToken.type === 'student') {
       next();

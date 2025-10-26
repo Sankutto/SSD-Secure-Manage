@@ -14,7 +14,7 @@ exports.googleCallback = (req, res, next) => {
   
       try {
         // Create a JWT token or session
-        const token = jwt.sign({ _id: user._id, Email: user.Email, Fullname: user.Fullname, Type: user.Type }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ email: user.Email, type: user.Type, _id: user._id, fullname: user.Fullname }, process.env.JWT_SECRET, { expiresIn: '1h' });
   
         // Redirect to your React frontend with the token
         return res.redirect(`${process.env.CLIENT_URL}?token=${token}`);
